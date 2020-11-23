@@ -1,0 +1,23 @@
+{
+  "name": "band_names",
+  "version": "1.0.0",
+  "description": "Backend para la aplicación band_names",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juancho637/node-bandnames-sockets.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "Juan David Garcia",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  }
+}
