@@ -19,8 +19,15 @@
         console.log('Perdimos comunicación con el servidor');
       });
 
+      socket.on('active-bands', function(bands) {
+        console.clear();
+        console.table(bands);
+      });
+
       socket.emit('mensaje', {
-        nombre: 'Juan David'
+        nombre: 'Juan David',
+        mensaje: 'Hola mundo',
+        device: 'web',
       });
 
       socket.on('mensaje', function(payload) {
