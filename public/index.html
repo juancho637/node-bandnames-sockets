@@ -7,66 +7,69 @@
   <title>WebSockets with Flutter</title>
 </head>
 <body>
-  <center><h1>WebSockets with Flutter</h1></center>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">id</th>
-        <th scope="col">name</th>
-        <th scope="col">votes</th>
-        <th scope="col">actions</th>
-      </tr>
-    </thead>
-    <tbody id="rows"></tbody>
-  </table>
+  <div id="app">
+    <center><h1>WebSockets with Flutter</h1></center>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">name</th>
+          <th scope="col">votes</th>
+          <th scope="col">actions</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr v-for="band in bands">
+          <td>{{band.id}}</td>
+          <td>{{band.name}}</td>
+          <td>{{band.votes}}</td>
+          <td>
+            <button @click="vote(band.id)" class="btn btn-outline-primary btn-sm">vote</button>
+            <button @click="delBand(band.id)" class="btn btn-outline-danger btn-sm">delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script> -->
+
   <script>
     var socket = io();
 
-    socket.on('connect', function() {
-      console.log('Conectado al servidor');
+    new Vue({
+      el: '#app',
+      data: {
+        bands: []
+      },
+      created() {
+        socket.on('connect', function() {
+          console.log('Conectado al servidor');
+        });
+
+        socket.on('disconnect', function() {
+          console.log('Perdimos comunicación con el servidor');
+        });
+
+        socket.on('active-bands', function(bands) {
+          this.bands = bands;
+        }.bind(this));
+      },
+      methods: {
+        vote(id) {
+          socket.emit('vote-band', {
+            id: id
+          });
+        },
+        delBand(id) {
+          socket.emit('delete-band', {
+            id: id
+          });
+        },
+      },
     });
-
-    socket.on('disconnect', function() {
-      console.log('Perdimos comunicación con el servidor');
-    });
-
-    socket.on('active-bands', function(bands) {
-      var table = document.getElementById("rows");
-      table.innerHTML = '';
-
-      bands.forEach((band) => {
-        var newRow = document.createElement("tr");
-        var idCell = document.createElement("td");
-        var nameCell = document.createElement("td");
-        var votesCell = document.createElement("td");
-        var actionsCell = document.createElement("td");
-        var btn = document.createElement("input");
-        
-        idCell.innerHTML = band.id;
-        nameCell.innerHTML = band.name;
-        votesCell.innerHTML = band.votes;
-        btn.type = "button";
-        btn.className += "btn btn-outline-primary btn-sm";
-        btn.id = band.id;
-        btn.value = "vote";
-        btn.onclick = voteBand;
-        actionsCell.append(btn);
-
-        newRow.append(idCell);
-        newRow.append(nameCell);
-        newRow.append(votesCell);
-        newRow.append(actionsCell);
-        table.appendChild(newRow);
-      });
-    });
-
-    function voteBand(event) {
-      socket.emit('vote-band', {
-        id: this.id
-      });
-    }
   </script>
 </body>
 </html>
